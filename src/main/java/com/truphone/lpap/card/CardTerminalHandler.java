@@ -5,6 +5,7 @@
  */
 package com.truphone.lpap.card;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,13 +37,20 @@ public class CardTerminalHandler {
     
     private static void refreshList() throws CardException {
         cardTerminalNames.clear();
-        
-        final TerminalFactory terminalFactory = TerminalFactory.getDefault();
-        cardTerminals = terminalFactory.terminals();
-        
-        for (CardTerminal terminal : cardTerminals.list()) {
-            cardTerminalNames.add(terminal.getName());
-        }
+
+	    try {
+		    System.setProperty("sun.security.smartcardio.library", "/lib/x86_64-linux-gnu/libpcsclite.so.1.0.0");
+//		    TerminalFactory terminalFactory = TerminalFactory.getDefault();
+		    TerminalFactory terminalFactory = TerminalFactory.getInstance("PC/SC", null);
+
+		    cardTerminals = terminalFactory.terminals();
+
+		    for (CardTerminal terminal : cardTerminals.list()) {
+			    cardTerminalNames.add(terminal.getName());
+		    }
+	    } catch (Exception e) {
+		    throw new RuntimeException(e);
+	    }
     }
     
     public static CardTerminal getCardTerminalByName(final String name) throws CardException {

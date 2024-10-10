@@ -1,10 +1,13 @@
 FROM openjdk:8
+
+FROM amazoncorretto:21-al2-full
+
 COPY . /usr/src/LPAdesktop
 RUN apt update
 RUN apt install maven genisoimage -y
 
 WORKDIR /usr/src/
-RUN git clone https://github.com/Truphone/LPAd_SM-DPPlus_Connector.git
+RUN git clone https://github.com/esim-sa-1ot/LPAd_SM-DPPlus_Connector.git
 WORKDIR /usr/src/LPAd_SM-DPPlus_Connector
 RUN mvn install
 WORKDIR /usr/src/LPAdesktop
