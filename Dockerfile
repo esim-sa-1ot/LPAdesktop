@@ -1,5 +1,3 @@
-FROM openjdk:8
-
 FROM amazoncorretto:21-al2-full
 
 COPY . /usr/src/LPAdesktop
