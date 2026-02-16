@@ -44,7 +44,7 @@ public class ApduChannelImpl implements ApduChannel {
         //AP ADDDED THIS STATUS COMMAND
         //send terminal capabilities
         LOG.log(Level.INFO,("Send Terminal Capabilities"));
-        apdu = hexStringToByteArray("80AA00000AA9088100820101830107");
+	    apdu = hexStringToByteArray("80AA00 00 0D A9 0B 8100 820101 830107 840101");
         
         LOG.log(Level.INFO, byteArrayToHex(apdu));
         responseApdu = basicChannel.transmit(new CommandAPDU(apdu));
@@ -67,6 +67,13 @@ public class ApduChannelImpl implements ApduChannel {
         LOG.log(Level.INFO, byteArrayToHex(apdu));
         responseApdu = logicalChannel.transmit(new CommandAPDU(apdu));
         LOG.log(Level.INFO,(String.format("0x%04X", responseApdu.getSW())));
+
+	    //Send TERMINAL PROFILE
+	    LOG.log(Level.INFO,("Send TERMINAL PROFILE"));
+	    apdu = hexStringToByteArray("80100000010C");
+	    LOG.log(Level.INFO, byteArrayToHex(apdu));
+	    responseApdu = logicalChannel.transmit(new CommandAPDU(apdu));
+	    LOG.log(Level.INFO,(String.format("0x%04X", responseApdu.getSW())));
 
     }
 

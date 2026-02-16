@@ -5,137 +5,141 @@
  */
 package com.truphone.lpap;
 
-import com.truphone.lpap.card.ApduChannelImpl;
 import com.truphone.lpa.impl.LocalProfileAssistantImpl;
 import com.truphone.lpa.progress.DownloadProgress;
 import com.truphone.lpad.progress.Progress;
 import com.truphone.lpad.progress.ProgressListener;
+import com.truphone.lpap.card.ApduChannelImpl;
+
+import javax.smartcardio.CardException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.smartcardio.CardException;
 
 /**
- *
  * @author amilcar.pereira
  */
 public class LpaSrc {
-    private static java.util.logging.Logger LOG = Logger.getLogger(LpaSrc.class.getName());
-    LocalProfileAssistantImpl lpa;
-    DownloadProgress dwnProgress;
-    Progress progress;
-    ApduChannelImpl apduChannel;
+	private static final java.util.logging.Logger LOG = Logger.getLogger(LpaSrc.class.getName());
+	LocalProfileAssistantImpl lpa;
+	DownloadProgress dwnProgress;
+	Progress progress;
+	ApduChannelImpl apduChannel;
 
-    String cardReaderName;
+	String cardReaderName;
 
-    public LpaSrc(final String cardReader) throws CardException {
-        
-        
-        this.cardReaderName = cardReader;
-        //START THE LPA
-        apduChannel = new ApduChannelImpl(cardReader);
+	public LpaSrc(final String cardReader) throws CardException {
 
-        lpa = new LocalProfileAssistantImpl(apduChannel);
 
-        dwnProgress = new DownloadProgress();
-//        dwnProgress.setProgressListener(new ProgressListener() {
-//            @Override
-//            public void onAction(String phase, String step, Double percentage, String message) {
-//                LOG.log(Level.FINE, message);
-//                //System.out.println(phase + "|" + step + "|" + percentage.toString() + "|" + message);
-//            }
-//        });
+		this.cardReaderName = cardReader;
+		//START THE LPA
+		apduChannel = new ApduChannelImpl(cardReader);
 
-        progress = new Progress();
-    }
+		lpa = new LocalProfileAssistantImpl(apduChannel);
 
-    public String getEID() {
-        return lpa.getEID();
-    }
+		dwnProgress = new DownloadProgress();
+		//        dwnProgress.setProgressListener(new ProgressListener() {
+		//            @Override
+		//            public void onAction(String phase, String step, Double percentage, String message) {
+		//                LOG.log(Level.FINE, message);
+		//                //System.out.println(phase + "|" + step + "|" + percentage.toString() + "|" + message);
+		//            }
+		//        });
 
-    public List<Map<String, String>> getProfiles() {
-        return lpa.getProfiles();
-    }
+		progress = new Progress();
+	}
 
-//    public DownloadProgress getdownloadProgress(){
-//        return dwnProgress;
-//    }
-    
-    public void downloadProfile(String activationCode) throws Exception {
-        lpa.downloadProfile(activationCode, dwnProgress);
-        resetLpa();
-        processPendingNotificaitons();
-    }
+	public String getEID() {
+		return lpa.getEID();
+	}
 
-    public void enableProfile(String aidOrIccid) throws CardException {
-        lpa.enableProfile(aidOrIccid, progress);
-        resetLpa();
-        processPendingNotificaitons();
-    }
+	public List<Map<String, String>> getProfiles() {
+		return lpa.getProfiles();
+	}
 
-    public void disableProfile(String aidOrIccid) throws CardException {
-        lpa.disableProfile(aidOrIccid, progress);
-        resetLpa();
-        processPendingNotificaitons();
-    }
+	//    public DownloadProgress getdownloadProgress(){
+	//        return dwnProgress;
+	//    }
 
-    public void deleteProfile(String aidOrIccid) throws CardException {
-        lpa.deleteProfile(aidOrIccid, progress);
-        resetLpa();
-        processPendingNotificaitons();
-    }
-    
-    public void processPendingNotificaitons(){
-        lpa.processPendingNotifications();
-    }
+	public void downloadProfile(String activationCode) throws Exception {
+		lpa.downloadProfile(activationCode, dwnProgress);
+		resetLpa();
+		processPendingNotificaitons();
+	}
 
-    public void resetLpa() throws CardException {
+	public void enableProfile(String aidOrIccid) throws CardException {
+		lpa.enableProfile(aidOrIccid, progress);
+		resetLpa();
+		processPendingNotificaitons();
+	}
 
-        apduChannel.close();
+	public void disableProfile(String aidOrIccid) throws CardException {
+		lpa.disableProfile(aidOrIccid, progress);
+		resetLpa();
+		processPendingNotificaitons();
+	}
 
-        apduChannel = new ApduChannelImpl(cardReaderName);
-        lpa = new LocalProfileAssistantImpl(apduChannel);
+	public void deleteProfile(String aidOrIccid) throws CardException {
+		lpa.deleteProfile(aidOrIccid, progress);
+		resetLpa();
+		processPendingNotificaitons();
+	}
 
-//        dwnProgress = new DownloadProgress();
-//        dwnProgress.setProgressListener(new ProgressListener() {
-//            @Override
-//            public void onAction(String phase, String step, Double percentage, String message) {
-//
-//                System.out.println(phase + "|" + step + "|" + percentage.toString() + "|" + message);
-//            }
-//        });
-//
-//        progress = new Progress();
+	public void processPendingNotificaitons() {
+		try {
+			lpa.processPendingNotifications();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    }
-    
-    public void setSMDPAddress(String dpAddress){
-         lpa.setDefaultSMDP(dpAddress, progress);
-    }
-    
-    public String getSMDPAddress(){
-        return lpa.getDefaultSMDP();
-    }
-    
-    public void setProgressListener(ProgressListener listener){
-        this.progress.setProgressListener(listener);
-    }
-    
-    public void disconnect() {
-        try{
-            apduChannel.close();
-            
-        }catch(CardException ex){
-           LOG.warning("Failed to close ApduChannel. " + ex.getMessage());
-        }
-        
-        lpa=null;
-        
-    }
-    
-    public void smdpRetrieveEvents(){
-        lpa.smdsRetrieveEvents(progress);
-        //resetLpa();
-        //processPendingNotificaitons();
-    }
+	public void resetLpa() throws CardException {
+
+		apduChannel.close();
+
+		apduChannel = new ApduChannelImpl(cardReaderName);
+		lpa = new LocalProfileAssistantImpl(apduChannel);
+
+		//        dwnProgress = new DownloadProgress();
+		//        dwnProgress.setProgressListener(new ProgressListener() {
+		//            @Override
+		//            public void onAction(String phase, String step, Double percentage, String message) {
+		//
+		//                System.out.println(phase + "|" + step + "|" + percentage.toString() + "|" + message);
+		//            }
+		//        });
+		//
+		//        progress = new Progress();
+
+	}
+
+	public void setSMDPAddress(String dpAddress) {
+		lpa.setDefaultSMDP(dpAddress, progress);
+	}
+
+	public String getSMDPAddress() {
+		return lpa.getDefaultSMDP();
+	}
+
+	public void setProgressListener(ProgressListener listener) {
+		this.progress.setProgressListener(listener);
+	}
+
+	public void disconnect() {
+		try {
+			apduChannel.close();
+
+		} catch (CardException ex) {
+			LOG.warning("Failed to close ApduChannel. " + ex.getMessage());
+		}
+
+		lpa = null;
+
+	}
+
+	public void smdpRetrieveEvents() {
+		lpa.smdsRetrieveEvents(progress);
+		//resetLpa();
+		//processPendingNotificaitons();
+	}
 }
