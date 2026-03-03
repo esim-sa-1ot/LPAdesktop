@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.truphone</groupId>
 	<artifactId>LPA</artifactId>
 	<version>1.0.0.0</version>
 	<packaging>jar</packaging>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
+
+		<!-- keep in one place -->
+		<mainClass>com.truphone.lpap.mainUI</mainClass>
 	</properties>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -75,6 +81,7 @@
 			<artifactId>lpad-sm-dp-plus-connector</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -82,7 +89,9 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<name>LPASCR</name>
+
 	<build>
 		<resources>
 			<resource>
@@ -94,7 +103,10 @@
 				<filtering>false</filtering>
 			</resource>
 		</resources>
+
 		<plugins>
+
+			<!-- copy resources -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.5</version>
@@ -107,14 +119,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${basedir}/target/TruLPA_${project.version}/config</outputDirectory>
-
 							<resources>
-								<!--                                <resource>
-										<directory> ${basedir}/src </directory>
-										<includes>
-												<include> app.properties </include>
-										</includes>
-								</resource>-->
 								<resource>
 									<directory>${basedir}/src/main/resources/windows</directory>
 									<includes>
@@ -122,16 +127,15 @@
 									</includes>
 								</resource>
 							</resources>
-
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 
+			<!-- fat jar -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.0.0</version>
-
 				<executions>
 					<execution>
 						<id>jar-with-dependencies</id>
@@ -145,114 +149,169 @@
 							</descriptorRefs>
 							<archive>
 								<manifest>
-									<mainClass>com.truphone.lpap.mainUI</mainClass>
+									<mainClass>${mainClass}</mainClass>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								</manifest>
 							</archive>
-
-
-						</configuration>
-					</execution>
-
-				</executions>
-
-			</plugin>
-
-
-			<!--            <plugin>
-											<groupId>com.github.wvengen</groupId>
-											<artifactId>proguard-maven-plugin</artifactId>
-											<executions>
-													<execution>
-															<phase>package</phase>
-															<goals>
-																	<goal>proguard</goal>
-															</goals>
-													</execution>
-											</executions>
-											<configuration>
-													<options>
-															<option>-allowaccessmodification</option>
-															<option>-keep public class com.truphone.lpap.mainUI { *; }</option>
-													</options>
-													<libs>
-															<lib>${java.home}/lib/rt.jar</lib>
-													</libs>
-											</configuration>
-									</plugin>-->
-			<plugin>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>2.1.1</version>
-				<executions>
-					<execution>
-						<id>l4j-clui</id>
-						<phase>package</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<headerType>console</headerType>
-							<outfile>target/TruLPA_${project.version}/lpa.exe</outfile>
-							<jar>target/LPA-${project.version}-jar-with-dependencies.jar</jar>
-							<icon>${basedir}/src/main/resources/tru_logo.ico</icon>
-							<errTitle>LPA</errTitle>
-							<classPath>
-								<mainClass>com.truphone.lpap.mainUI</mainClass>
-								<addDependencies>true</addDependencies>
-								<preCp>anything</preCp>
-							</classPath>
-
-							<jre>
-								<minVersion>1.8.0</minVersion>
-								<!--                                <opts>
-																										<opt>-Djava.endorsed.dirs=./endorsed</opt>
-																								</opts>-->
-							</jre>
-							<versionInfo>
-								<fileVersion>${project.version}</fileVersion>
-								<txtFileVersion>${project.version}</txtFileVersion>
-								<fileDescription>Truphone LPA Simulator</fileDescription>
-								<copyright>Truphone 2019</copyright>
-								<productVersion>${project.version}</productVersion>
-								<txtProductVersion>${project.version}</txtProductVersion>
-								<productName>Tru LPA</productName>
-								<internalName>LPA</internalName>
-								<originalFilename>lpa.exe</originalFilename>
-							</versionInfo>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>sh.tak.appbundler</groupId>
-				<artifactId>appbundle-maven-plugin</artifactId>
-				<version>1.2.0</version>
-				<configuration>
-					<mainClass>com.truphone.lpap.mainUI</mainClass>
-					<jrePath>/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk</jrePath>
-					<generateDiskImageFile>true</generateDiskImageFile>
-					<bundleName>Truphone LPA</bundleName>
-					<iconFile>tru_logo.icns</iconFile>
 
-					<additionalBundledClasspathResources>
-						<fileSet>
-							<directory>${basedir}/src/main/resources/mac</directory>
-							<includes>
-								<include>logging.properties</include>
-							</includes>
-						</fileSet>
-					</additionalBundledClasspathResources>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>bundle</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- IMPORTANT: Do NOT run launch4j or appbundler here (base build).
+					 They are moved into OS-specific profiles below. -->
+
 		</plugins>
 	</build>
+
+	<profiles>
+
+		<!-- Windows: build .exe wrapper -->
+		<profile>
+			<id>windows-exe</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.akathist.maven.plugins.launch4j</groupId>
+						<artifactId>launch4j-maven-plugin</artifactId>
+						<version>2.1.1</version>
+						<executions>
+							<execution>
+								<id>l4j-clui</id>
+								<phase>package</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<headerType>console</headerType>
+									<outfile>target/TruLPA_${project.version}/lpa.exe</outfile>
+									<jar>target/LPA-${project.version}-jar-with-dependencies.jar</jar>
+									<icon>${basedir}/src/main/resources/tru_logo.ico</icon>
+									<errTitle>LPA</errTitle>
+									<classPath>
+										<mainClass>${mainClass}</mainClass>
+										<addDependencies>true</addDependencies>
+										<preCp>anything</preCp>
+									</classPath>
+
+									<!-- Fix for your error: jre must exist -->
+									<jre>
+										<minVersion>1.8.0</minVersion>
+									</jre>
+
+									<versionInfo>
+										<fileVersion>${project.version}</fileVersion>
+										<txtFileVersion>${project.version}</txtFileVersion>
+										<fileDescription>Truphone LPA Simulator</fileDescription>
+										<copyright>Truphone 2019</copyright>
+										<productVersion>${project.version}</productVersion>
+										<txtProductVersion>${project.version}</txtProductVersion>
+										<productName>Tru LPA</productName>
+										<internalName>LPA</internalName>
+										<originalFilename>lpa.exe</originalFilename>
+									</versionInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- macOS: build .app/.dmg -->
+		<profile>
+			<id>macos-bundle</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>sh.tak.appbundler</groupId>
+						<artifactId>appbundle-maven-plugin</artifactId>
+						<version>1.2.0</version>
+						<configuration>
+							<mainClass>${mainClass}</mainClass>
+							<generateDiskImageFile>true</generateDiskImageFile>
+							<bundleName>Truphone LPA</bundleName>
+							<iconFile>tru_logo.icns</iconFile>
+							<additionalBundledClasspathResources>
+								<fileSet>
+									<directory>${basedir}/src/main/resources/mac</directory>
+									<includes>
+										<include>logging.properties</include>
+									</includes>
+								</fileSet>
+							</additionalBundledClasspathResources>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>bundle</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>linux-deb</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.panteleyev</groupId>
+						<artifactId>jpackage-maven-plugin</artifactId>
+						<version>1.6.0</version>
+
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jpackage</goal>
+								</goals>
+							</execution>
+						</executions>
+
+						<configuration>
+							<!-- image type -->
+							<type>DEB</type>
+
+							<!-- ask jpackage to build a Linux package of this type -->
+							<linuxPackageType>deb</linuxPackageType>
+
+							<name>lpadesktop</name>
+							<appVersion>${project.version}</appVersion>
+
+							<input>${project.build.directory}</input>
+							<mainJar>LPA-${project.version}-jar-with-dependencies.jar</mainJar>
+							<mainClass>com.truphone.lpap.mainUI</mainClass>
+
+							<destination>${project.build.directory}</destination>
+							<vendor>Truphone</vendor>
+							<description>Truphone LPA Simulator</description>
+
+							<linuxShortcut>true</linuxShortcut>
+							<linuxMenuGroup>Utility</linuxMenuGroup>
+						</configuration>
+
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
